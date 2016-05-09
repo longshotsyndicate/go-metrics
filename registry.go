@@ -59,7 +59,9 @@ type StandardRegistry struct {
 
 // Create a new registry.
 func NewRegistry() Registry {
-	return NewTaggedRegistry(make(map[string]string))
+	return NewTaggedRegistry(map[string]string{
+		"host": getShortHostname(),
+	})
 }
 
 func NewTaggedRegistry(tags map[string]string) Registry {

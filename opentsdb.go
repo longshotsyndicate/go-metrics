@@ -58,7 +58,6 @@ func getShortHostname() string {
 }
 
 func openTSDB(c *OpenTSDBConfig) error {
-	shortHostname := getShortHostname()
 	now := time.Now().Unix()
 	du := float64(c.DurationUnit)
 	conn, err := net.DialTCP("tcp", nil, c.Addr)
@@ -69,9 +68,7 @@ func openTSDB(c *OpenTSDBConfig) error {
 	w := bufio.NewWriter(conn)
 
 	tagMap := c.Registry.Tags()
-	tagList := []string{
-		fmt.Sprintf("host=%s", shortHostname),
-	}
+	tagList := make([]string, 0, len(tagMap))
 	for key, val := range tagMap {
 		tagList = append(tagList, fmt.Sprintf("%s=%s", key, val))
 	}
