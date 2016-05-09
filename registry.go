@@ -44,18 +44,29 @@ type Registry interface {
 
 	// Unregister all metrics.  (Mostly for testing.)
 	UnregisterAll()
+
+	// Get all tags
+	Tags() map[string]string
 }
 
 // The standard implementation of a Registry is a mutex-protected map
 // of names to metrics.
 type StandardRegistry struct {
 	metrics map[string]interface{}
+	tags map[string]string
 	mutex   sync.Mutex
 }
 
 // Create a new registry.
 func NewRegistry() Registry {
-	return &StandardRegistry{metrics: make(map[string]interface{})}
+	return NewTaggedRegistry(make(map[string]string))
+}
+
+func NewTaggedRegistry(tags map[string]string) Registry {
+	return &StandardRegistry{
+		metrics: make(map[string]interface{}),
+		tags: tags,
+	}
 }
 
 // Call the given function for each registered metric.
@@ -122,6 +133,10 @@ func (r *StandardRegistry) UnregisterAll() {
 	for name, _ := range r.metrics {
 		delete(r.metrics, name)
 	}
+}
+
+func (r *StandardRegistry) Tags() map[string]string {
+	return r.tags
 }
 
 func (r *StandardRegistry) register(name string, i interface{}) error {
@@ -202,6 +217,10 @@ func (r *PrefixedRegistry) Unregister(name string) {
 // Unregister all metrics.  (Mostly for testing.)
 func (r *PrefixedRegistry) UnregisterAll() {
 	r.underlying.UnregisterAll()
+}
+
+func (r *PrefixedRegistry) Tags() map[string]string {
+	return r.underlying.Tags()
 }
 
 var DefaultRegistry Registry = NewRegistry()
