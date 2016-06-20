@@ -53,7 +53,7 @@ type Registry interface {
 // of names to metrics.
 type StandardRegistry struct {
 	metrics map[string]interface{}
-	tags map[string]string
+	tags    map[string]string
 	mutex   sync.Mutex
 }
 
@@ -67,7 +67,7 @@ func NewRegistry() Registry {
 func NewTaggedRegistry(tags map[string]string) Registry {
 	return &StandardRegistry{
 		metrics: make(map[string]interface{}),
-		tags: tags,
+		tags:    tags,
 	}
 }
 
